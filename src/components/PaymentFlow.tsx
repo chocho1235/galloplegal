@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
-import { v4 as uuidv4 } from 'uuid';
 import { CreditCard, Palette as Paypal, MessageSquare, Clock, Shield, AlertCircle } from 'lucide-react';
 
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
+// Initialize Stripe with your public key
+const stripePromise = loadStripe('pk_test_51R73MMQ0wlZSw6rnhps4KaOqMDEncuYhA9RthOkqDbwZE2Q0PgTcigSgKwTmlqs5xls7Limikqmiiup8bI4MoxZi00weDa9Xvl');
 
 interface PaymentFlowProps {
   question: string;
-  onSuccess: (referenceNumber: string) => void;
 }
 
-function PaymentFlow({ question, onSuccess }: PaymentFlowProps) {
+function PaymentFlow({ question }: PaymentFlowProps) {
   const [paymentMethod, setPaymentMethod] = useState<'card' | 'paypal' | null>(null);
   const [isSubscription, setIsSubscription] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -21,26 +20,21 @@ function PaymentFlow({ question, onSuccess }: PaymentFlowProps) {
     setError(null);
 
     try {
-      const response = await fetch('http://localhost:3000/create-payment-intent', {
+      const response = await fetch('http://localhost:3000/create-checkout-session', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          amount: isSubscription ? 5000 : 500, // Amount in pence
+          amount: isSubscription ? 5000 : 500, // amount in pence
           currency: 'gbp',
+          question,
         }),
       });
 
-      const { clientSecret, referenceNumber } = await response.json();
-
+      const { sessionId } = await response.json();
       const stripe = await stripePromise;
-      const { error } = await stripe.confirmCardPayment(clientSecret);
-
+      const { error } = await stripe.redirectToCheckout({ sessionId });
       if (error) {
         setError('Payment processing failed. Please try again.');
-      } else {
-        onSuccess(referenceNumber);
       }
     } catch (err) {
       setError('Payment processing failed. Please try again.');

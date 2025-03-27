@@ -1,12 +1,12 @@
 import React from 'react';
 import { CheckCircle, MessageSquare } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
 
-interface PaymentSuccessProps {
-  referenceNumber: string;
-  question: string;
-}
+function PaymentSuccess() {
+  const [searchParams] = useSearchParams();
+  const referenceNumber = searchParams.get('reference') || '';
+  const question = searchParams.get('question') || '';
 
-function PaymentSuccess({ referenceNumber, question }: PaymentSuccessProps) {
   const handleWhatsAppClick = () => {
     const message = `Legal Consultation #${referenceNumber}. My question is: ${question}`;
     const whatsappNumber = '447351778518'; // Replace with actual business WhatsApp
