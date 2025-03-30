@@ -7,9 +7,10 @@ const stripePromise = loadStripe('pk_test_51R73MMQ0wlZSw6rnhps4KaOqMDEncuYhA9Rth
 
 interface PaymentFlowProps {
   question: string;
+  onSuccess: (reference: string) => void;
 }
 
-function PaymentFlow({ question }: PaymentFlowProps) {
+function PaymentFlow({ question, onSuccess }: PaymentFlowProps) {
   const [paymentMethod, setPaymentMethod] = useState<'card' | 'paypal' | null>(null);
   const [isSubscription, setIsSubscription] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -20,24 +21,46 @@ function PaymentFlow({ question }: PaymentFlowProps) {
     setError(null);
 
     try {
+      console.log('Initiating payment process...');
+      const paymentData = {
+        amount: isSubscription ? 5000 : 500, // amount in pence
+        currency: 'gbp',
+        question,
+      };
+      console.log('Payment data:', paymentData);
+
       const response = await fetch('http://localhost:3000/create-checkout-session', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          amount: isSubscription ? 5000 : 500, // amount in pence
-          currency: 'gbp',
-          question,
-        }),
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify(paymentData),
       });
 
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to create checkout session');
+      }
+
       const { sessionId } = await response.json();
+      console.log('Received session ID:', sessionId);
+
       const stripe = await stripePromise;
-      const { error } = await stripe.redirectToCheckout({ sessionId });
-      if (error) {
-        setError('Payment processing failed. Please try again.');
+      
+      if (!stripe) {
+        throw new Error('Stripe failed to load');
+      }
+
+      console.log('Redirecting to Stripe checkout...');
+      const { error: stripeError } = await stripe.redirectToCheckout({ sessionId });
+      
+      if (stripeError) {
+        throw new Error(stripeError.message);
       }
     } catch (err) {
-      setError('Payment processing failed. Please try again.');
+      console.error('Payment error:', err);
+      setError(err instanceof Error ? err.message : 'Payment processing failed. Please try again.');
     } finally {
       setIsProcessing(false);
     }

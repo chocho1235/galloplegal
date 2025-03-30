@@ -9,7 +9,7 @@ function Terms() {
         <section className="mb-8">
           <h2 className="text-2xl font-semibold text-white mb-4">1. Service Overview</h2>
           <p className="text-gray-300">
-            EquestrianLegal provides a platform connecting users with licensed attorneys specializing in equine law. 
+            GallopLegal provides a platform connecting users with licensed attorneys specializing in equine law. 
             Our service facilitates legal consultations but does not constitute legal representation until formally established.
           </p>
         </section>

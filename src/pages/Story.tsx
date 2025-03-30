@@ -43,14 +43,14 @@ function Story() {
     {
       year: 2022,
       title: "Industry Recognition",
-      description: "Awarded 'Best Legal Tech Innovation' in the equestrian industry.",
+      description: "Awarded 'Best Legal Tech Innovation' in the Gallop industry.",
       icon: <Award size={24} className="text-yellow-400" />,
       image: "https://images.unsplash.com/photo-1566251037378-5e04e3bec343?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
     },
     {
       year: 2023,
       title: "International Expansion",
-      description: "Extended our services to international equestrian markets.",
+      description: "Extended our services to international Gallop markets.",
       icon: <Globe size={24} className="text-purple-400" />,
       image: "https://images.unsplash.com/photo-1534073828943-f801091bb18c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
     }

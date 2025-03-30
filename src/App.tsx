@@ -8,6 +8,9 @@ import Pricing from './pages/Pricing';
 import Story from './pages/Story';
 import Terms from './pages/Terms';
 import Privacy from './pages/Privacy';
+import Success from './pages/Success';
+import Cancel from './pages/Cancel';
+import Admin from './pages/Admin';
 
 function App() {
   const location = useLocation();
@@ -23,6 +26,9 @@ function App() {
           <Route path="/story" element={<Story />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/privacy" element={<Privacy />} />
+          <Route path="/success" element={<Success />} />
+          <Route path="/cancel" element={<Cancel />} />
+          <Route path="/admin/verify" element={<Admin />} />
         </Routes>
       </main>
       <Footer />

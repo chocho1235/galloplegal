@@ -59,7 +59,7 @@ function Expertise() {
         Our Legal Expertise
       </h1>
       <p className="text-gray-300 text-xl text-center mb-12 max-w-3xl mx-auto">
-        Specialized legal services tailored to the unique needs of the equestrian community.
+        Specialized legal services tailored to the unique needs of the Gallop community.
       </p>
 
       <div className="grid md:grid-cols-2 gap-8">

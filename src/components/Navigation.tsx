@@ -1,73 +1,109 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { Scale, Menu, X } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { Menu, X, ChevronDown } from 'lucide-react';
 
 function Navigation() {
-  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const location = useLocation();
 
-  const closeMenu = () => setIsMenuOpen(false);
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const navLinks = [
+    { path: '/', label: 'Home' },
+    { path: '/expertise', label: 'Expertise' },
+    { path: '/pricing', label: 'Pricing' },
+    { path: '/story', label: 'Our Story' },
+  ];
 
   return (
-    <nav className="bg-gray-900 border-b border-gray-800 sticky top-0 z-50">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
-          <Link to="/" className="flex items-center" onClick={closeMenu}>
-            <Scale className="text-blue-400 h-6 w-6 md:h-8 md:w-8" />
-            <span className="ml-2 text-lg md:text-xl font-bold text-white">EquestrianLegal</span>
-          </Link>
-          
-          <div className="hidden md:flex items-center space-x-4 lg:space-x-8">
-            <NavLink to="/expertise">Legal Expertise</NavLink>
-            <NavLink to="/pricing">Pricing</NavLink>
-            <NavLink to="/story">Our Story</NavLink>
-            <Link 
-              to="/" 
-              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors text-sm lg:text-base"
-            >
-              Get Legal Help
+    <nav className={`fixed w-full z-50 transition-all duration-300 ${
+      isScrolled ? 'bg-gray-900/95 backdrop-blur-sm shadow-lg' : 'bg-transparent'
+    }`}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16 md:h-20">
+          <div className="flex-shrink-0">
+            <Link to="/" className="flex items-center">
+              <span className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+                GallopLegal
+              </span>
             </Link>
           </div>
 
-          <button 
-            className="md:hidden text-white p-2"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            aria-label="Toggle menu"
-          >
-            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center space-x-8">
+            {navLinks.map((link) => (
+              <Link
+                key={link.path}
+                to={link.path}
+                className={`text-sm font-medium transition-colors duration-200 ${
+                  location.pathname === link.path
+                    ? 'text-blue-400'
+                    : 'text-gray-300 hover:text-white'
+                }`}
+              >
+                {link.label}
+              </Link>
+            ))}
+            <Link
+              to="/pricing"
+              className="bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-600 transition-colors duration-200"
+            >
+              Get Started
+            </Link>
+          </div>
+
+          {/* Mobile menu button */}
+          <div className="md:hidden">
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none"
+            >
+              {isOpen ? (
+                <X className="block h-6 w-6" />
+              ) : (
+                <Menu className="block h-6 w-6" />
+              )}
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Mobile menu */}
-      {isMenuOpen && (
-        <div className="md:hidden bg-gray-800 border-b border-gray-700 absolute w-full left-0">
-          <div className="flex flex-col space-y-3 p-4">
-            <NavLink to="/expertise" onClick={closeMenu}>Legal Expertise</NavLink>
-            <NavLink to="/pricing" onClick={closeMenu}>Pricing</NavLink>
-            <NavLink to="/story" onClick={closeMenu}>Our Story</NavLink>
-            <Link 
-              to="/"
-              onClick={closeMenu}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors w-full text-center"
+      {/* Mobile Navigation */}
+      <div className={`md:hidden transition-all duration-300 ease-in-out ${
+        isOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
+      } overflow-hidden bg-gray-900/95 backdrop-blur-sm`}>
+        <div className="px-2 pt-2 pb-3 space-y-1">
+          {navLinks.map((link) => (
+            <Link
+              key={link.path}
+              to={link.path}
+              className={`block px-3 py-2 rounded-md text-base font-medium ${
+                location.pathname === link.path
+                  ? 'bg-gray-800 text-blue-400'
+                  : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+              }`}
+              onClick={() => setIsOpen(false)}
             >
-              Get Legal Help
+              {link.label}
             </Link>
-          </div>
+          ))}
+          <Link
+            to="/pricing"
+            className="block px-3 py-2 rounded-md text-base font-medium bg-blue-500 text-white hover:bg-blue-600"
+            onClick={() => setIsOpen(false)}
+          >
+            Get Started
+          </Link>
         </div>
-      )}
+      </div>
     </nav>
-  );
-}
-
-function NavLink({ to, children, onClick }) {
-  return (
-    <Link 
-      to={to} 
-      className="text-gray-300 hover:text-white transition-colors text-sm lg:text-base block md:inline-block text-center"
-      onClick={onClick}
-    >
-      {children}
-    </Link>
   );
 }
 
